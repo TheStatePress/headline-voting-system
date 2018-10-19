@@ -3,10 +3,12 @@ import urljoin from 'url-join';
 import axios from 'axios';
 import './App.css';
 import { apiURL } from './config.js';
+import io from 'socket.io-client';
 
 class App extends Component {
   constructor(props) {
     super(props);
+    this.socket = io.connect(apiURL);
     this.state = {
       headlineInput: '',
       headlines: {}
