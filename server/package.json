@@ -4,12 +4,20 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon --inspect -r esm index.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.18.3",
-    "express": "^4.16.4"
+    "cors": "^2.8.4",
+    "esm": "^3.0.84",
+    "express": "^4.16.4",
+    "ramda": "^0.25.0",
+    "socket.io": "^2.1.1",
+    "sqlite": "^3.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.4"
   }
 }
