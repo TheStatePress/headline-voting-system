@@ -35,6 +35,7 @@ class App extends Component {
     this.socket = io.connect(apiURL);
     this.state = {
       headlineInput: '',
+      // user doesn't work rn because the headlines get call is made before the user enters their email address
       user: '',
       headlineByIdMap: {}
     }
