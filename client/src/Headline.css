@@ -12,6 +12,8 @@ li {
 }
 
 h3 {
+  font-weight: normal;
+  font-family: 'Playfair Display', serif;
   margin: 0;
 }
 .voteContainer {
@@ -27,9 +29,17 @@ h3 {
 .vote-button:hover {
   color: #000;
 }
+.vote-button.voted:hover {
+  color: unset;
+}
 .vote-button.up.voted {
-  color: blue;
+  color: rgb(0, 132, 255);
 }
 .vote-button.down.voted {
   color: red;
+}
+.vote-button.hidden {
+  /* display: hidden !important; */
+  opacity: 0;
+  cursor: unset;
 }

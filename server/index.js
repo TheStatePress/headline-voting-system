@@ -3,7 +3,7 @@ import http from 'http';
 import bodyParser from 'body-parser';
 import sqlite from 'sqlite';
 import socket from 'socket.io';
-import { indexBy, trim } from 'ramda';
+import { indexBy, prop, trim } from 'ramda';
 import cors from 'cors';
 
 const app = express();
@@ -30,7 +30,7 @@ const setupDb = async () => {
   };
   await db.run('CREATE TABLE IF NOT EXISTS headlines (id INTEGER PRIMARY KEY, headline STRING NOT NULL, userid INTEGER NOT NULL);');
   await db.run('CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, email STRING NOT NULL);');
-  await db.run('CREATE TABLE IF NOT EXISTS votes (id INTEGER PRIMARY KEY, userid INTEGER NOT NULL, headlineid INTEGER NOT NULL, FOREIGN KEY(userid) REFERENCES users(id), FOREIGN KEY(headlineid) REFERENCES headlines(id));');
+  await db.run('CREATE TABLE IF NOT EXISTS votes (id INTEGER PRIMARY KEY, userid INTEGER NOT NULL, headlineid INTEGER NOT NULL, direction INTEGER, FOREIGN KEY(userid) REFERENCES users(id), FOREIGN KEY(headlineid) REFERENCES headlines(id));');
   const tables = await db.all('SELECT name FROM sqlite_master WHERE type="table"');
   console.log(tables);
 }
@@ -39,23 +39,43 @@ io.on('connection', (socket) => {
   console.log('a user connected');
 });
 
-app.get('/headlines', async (req, res) => {
+const getVotes = async(id) => {
   const db = await dbPromise;
-  const headlines = await db.all('SELECT headlines.headline, headlines.id, users.email, ( SELECT COUNT(*) FROM votes WHERE votes.headlineid = headlines.id ) as votes FROM headlines LEFT JOIN users ON headlines.userid = users.id');
-  res.json(indexBy(headline => headline.id, headlines));
+  const votes = await db.get('SELECT ( SELECT COALESCE( SUM(direction), 0) FROM votes WHERE votes.headlineid = ?) as votes', id);
+  return votes.votes;
+  // return 0;
+};
+
+app.get('/headlines', async (req, res) => {
+  const { email } = req.query;
+  const db = await dbPromise;
+  let user = await db.get('SELECT id FROM users WHERE email=?', email);
+  if(!user) {
+    await db.run('INSERT INTO users (email) VALUES (?)', trim(email));
+    user = await db.get('SELECT id FROM users WHERE email=?', trim(email));
+  };
+  const headlines = await db.all(
+    `SELECT
+      headlines.headline,
+      headlines.id,
+      users.id as author,
+      ( SELECT COALESCE(SUM(votes.direction), 0) FROM votes WHERE votes.headlineid = headlines.id) as votes,
+      ( SELECT COALESCE(SUM(votes.direction), 0) FROM votes WHERE votes.headlineid = headlines.id AND votes.userid = ?) as selfVotes
+     FROM headlines LEFT JOIN users ON headlines.userid = users.id`, user.id);
+  res.json(indexBy(prop('id'), headlines));
 });
 
 app.post('/headlines', async (req, res) => {
   debugger;
   const { headline, user: email } = req.body;
   const db = await dbPromise;
-  let userid = await db.get('SELECT id FROM users WHERE email=?', trim(email));
+  let user = await db.get('SELECT id FROM users WHERE email=?', trim(email));
   console.log(email);
-  if(!userid) {
-    await db.run('INSERT INTO users (email) VALUES (?)', email);
-    userid = await db.get('SELECT id FROM users WHERE email=?', trim(email));
+  if(!user) {
+    await db.run('INSERT INTO users (email) VALUES (?)', trim(email));
+    user = await db.get('SELECT id FROM users WHERE email=?', trim(email));
   };
-  await db.run('INSERT INTO headlines ( headline, userid ) VALUES (?, ?);', headline, userid.id);
+  await db.run('INSERT INTO headlines ( headline, userid ) VALUES (?, ?);', headline, user.id);
   res.status(200).send();
 });
 
@@ -65,7 +85,28 @@ app.get('/headlines/:id', async (req, res) => {
   res.json(headline);
 });
 
-app.post('/headlines/:id', async (req, res) => { });
+app.post('/headlines/:id/vote', async (req, res) => {
+  const { id } = req.params;
+  const { email, direction } = req.body;
+  const db = await dbPromise;
+  await db.run('DELETE FROM votes WHERE userid=(SELECT id FROM users WHERE email=?) AND headlineid=?', email, id);
+  await db.run('INSERT INTO votes (headlineid, userid, direction) VALUES (?, (SELECT id FROM users WHERE email=?), ?);', id, email, direction);
+  const votes = await getVotes(id);
+  console.log(votes)
+  io.emit('RECEIVE_HEADLINE_VOTE', { id, votes });
+  res.send();
+});
+
+app.post('/headlines/:id/unvote', async (req, res) => {
+  const { id } = req.params;
+  const { email } = req.body;
+  const db = await dbPromise;
+  await db.run('DELETE FROM votes WHERE userid=(SELECT id FROM users WHERE email=?) AND headlineid=?', email, id);
+  const votes = await getVotes(id);
+  console.log(votes)
+  io.emit('RECEIVE_HEADLINE_VOTE', { id, votes });
+  res.send();
+})
 
 app.use(express.static('../client/build/'));
 
