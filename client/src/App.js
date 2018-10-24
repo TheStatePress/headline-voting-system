@@ -8,6 +8,7 @@ import * as R from 'ramda';
 import FlipMove from 'react-flip-move';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPaperPlane } from '@fortawesome/free-solid-svg-icons'
+import { faSave } from '@fortawesome/free-solid-svg-icons'
 
 
 import logo from './logo.png';
@@ -34,7 +35,7 @@ class App extends Component {
     this.socket = io.connect(apiURL);
     this.state = {
       headlineInput: '',
-      user: 'chuck@chuckdries.com',
+      user: '',
       headlineByIdMap: {}
     }
 
@@ -115,7 +116,8 @@ class App extends Component {
     const {
       headlineByIdMap,
       headlineInput,
-      user
+      user,
+      tempUser
     } = this.state;
     return (
       <div className="App">
@@ -124,28 +126,37 @@ class App extends Component {
             <img alt="The Stale Mess" src={logo} />
           </div>
         </div>
-        <div className="headline-area">
-          <ul className='list-reset'>
-            <FlipMove enterAnimation="fade" leaveAnimation="fade">
-              {(getSortedIds(headlineByIdMap)).map(id => (
-                <Headline
-                  key={id}
-                  headline={headlineByIdMap[id]}
-                  upvoteFunc={this.upvote}
-                  unvoteFunc={this.unvote}
-                  downvoteFunc={this.downvote}
-                />
-              ))}
-            </FlipMove>
-          </ul>
-        </div>
-        <div className="form-container">
-          <form onSubmit={this.submitHeadline}>
-            <input value={user} onChange={(e) => this.setState({ user: e.target.value })} type="email" name="headline" placeholder="your @asu.edu email"></input>
-            <input value={headlineInput} onChange={(e) => this.setState({ headlineInput: e.target.value })} type="text" name="headline" placeholder="suggest a headline"></input>
-            <button type="submit"><FontAwesomeIcon icon={faPaperPlane} size="2x" /></button>
-          </form>
-        </div>
+        { R.isNil(user) || user.length === 0
+            ? <div className="centering"><form onSubmit={() => {this.setState({ user: tempUser })}}>
+              <input className="auto" value={tempUser} onChange={(e) => {this.setState({ tempUser: e.target.value })}} type="email" placeholder="enter your @asu.edu email" />
+              <button type="submit"><FontAwesomeIcon icon={faSave} size="2x" /></button>
+            </form></div>
+            :(
+              <div>
+            <div className="headline-area">
+            <ul className='list-reset'>
+              <FlipMove enterAnimation="fade" leaveAnimation="fade">
+                {(getSortedIds(headlineByIdMap)).map(id => (
+                  <Headline
+                    key={id}
+                    headline={headlineByIdMap[id]}
+                    upvoteFunc={this.upvote}
+                    unvoteFunc={this.unvote}
+                    downvoteFunc={this.downvote}
+                  />
+                ))}
+              </FlipMove>
+            </ul>
+          </div>
+          <div className="form-container">
+            <form onSubmit={this.submitHeadline}>
+              <input className="auto" value={headlineInput} onChange={(e) => this.setState({ headlineInput: e.target.value })} type="text" name="headline" placeholder="suggest a headline"></input>
+              <button type="submit"><FontAwesomeIcon icon={faPaperPlane} size="2x" /></button>
+            </form>
+          </div>
+          </div>)
+      }
+        
       </div>
     );
   }
