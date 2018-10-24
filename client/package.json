@@ -11,6 +11,7 @@
     "ramda": "^0.25.0",
     "react": "^16.6.0",
     "react-dom": "^16.5.2",
+    "react-flip-move": "^3.0.3",
     "react-scripts": "2.0.5",
     "socket.io-client": "^2.1.1",
     "url-join": "^4.0.0"
@@ -29,5 +30,8 @@
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ]
+  ],
+  "devDependencies": {
+    "webpack-bundle-analyzer": "^3.0.3"
+  }
 }
