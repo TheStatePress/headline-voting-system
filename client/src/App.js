@@ -6,6 +6,8 @@ import io from 'socket.io-client';
 // import { descend, inc, path, assocPath, prop, sort } from 'ramda';
 import * as R from 'ramda';
 import FlipMove from 'react-flip-move';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPaperPlane } from '@fortawesome/free-solid-svg-icons'
 
 
 import logo from './logo.png';
@@ -141,7 +143,7 @@ class App extends Component {
           <form onSubmit={this.submitHeadline}>
             <input value={user} onChange={(e) => this.setState({ user: e.target.value })} type="email" name="headline" placeholder="your @asu.edu email"></input>
             <input value={headlineInput} onChange={(e) => this.setState({ headlineInput: e.target.value })} type="text" name="headline" placeholder="suggest a headline"></input>
-            <input type="submit" value=">" />
+            <button type="submit"><FontAwesomeIcon icon={faPaperPlane} size="2x" /></button>
           </form>
         </div>
       </div>

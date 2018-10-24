@@ -35,8 +35,12 @@ const setupDb = async () => {
   console.log(tables);
 }
 
+let connectedUsers = 0;
 io.on('connection', (socket) => {
-  console.log('a user connected');
+  console.log(++connectedUsers + ' connected users');
+  socket.on('disconnect', () => {
+    console.log(--connectedUsers + ' connected users');
+  })
 });
 
 const getVotes = async(id) => {
@@ -69,7 +73,6 @@ app.post('/headlines', async (req, res) => {
   const { headline, user: email } = req.body;
   const db = await dbPromise;
   let user = await db.get('SELECT id FROM users WHERE email=?', trim(email));
-  console.log(email);
   if(!user) {
     await db.run('INSERT INTO users (email) VALUES (?)', trim(email));
     user = await db.get('SELECT id FROM users WHERE email=?', trim(email));
