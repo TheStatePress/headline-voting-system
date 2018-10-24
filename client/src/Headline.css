@@ -40,6 +40,6 @@ h3 {
 }
 .vote-button.hidden {
   /* display: hidden !important; */
-  opacity: 0;
-  cursor: unset;
+  /* opacity: 0; */
+  /* cursor: unset; */
 }

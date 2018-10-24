@@ -5,7 +5,7 @@ import { apiURL } from './config.js';
 import io from 'socket.io-client';
 // import { descend, inc, path, assocPath, prop, sort } from 'ramda';
 import * as R from 'ramda';
-// import FlipMove from 'react-flip-move';
+import FlipMove from 'react-flip-move';
 
 
 import logo from './logo.png';
@@ -120,20 +120,21 @@ class App extends Component {
         <div id="App-header">
           <div>
             <img alt="The Stale Mess" src={logo} />
-            {/* <h1>Stale Mess Headline Voting System</h1> */}
           </div>
         </div>
         <div className="headline-area">
           <ul className='list-reset'>
-            {(getSortedIds(headlineByIdMap)).map(id => (
-              <Headline
-                key={id}
-                headline={headlineByIdMap[id]}
-                upvoteFunc={this.upvote}
-                unvoteFunc={this.unvote}
-                downvoteFunc={this.downvote}
-              />
-            ))}
+            <FlipMove >
+              {(getSortedIds(headlineByIdMap)).map(id => (
+                <Headline
+                  key={id}
+                  headline={headlineByIdMap[id]}
+                  upvoteFunc={this.upvote}
+                  unvoteFunc={this.unvote}
+                  downvoteFunc={this.downvote}
+                />
+              ))}
+            </FlipMove>
           </ul>
         </div>
         <div className="form-container">
