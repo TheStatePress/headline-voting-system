@@ -5,25 +5,30 @@
   height: 100vh;
 }
 
-.App-header {
+#App-header {
+  width: 100vw;
+  position: fixed;
+  top: 0px;
   display: flex;
   align-items: center;
+  padding: 25px 10px 10px 10px;
+  background-color: #e2e1e0;
+  transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+}
+
+#App-header.shadow {
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+}
+
+#App-header div {
   width: 100%;
   max-width: 800px;
-  padding: 25px 10px 10px 10px;
   margin: auto;
 }
 
-.App-header img {
+#App-header img {
   height: 30px;
   margin-right: 10px;
-}
-
-.App-header h1 {
-  font-weight: normal;
-  padding-top: 10px;
-  margin: 0;
-  font-size: 16px;
 }
 
 .headline-area {
@@ -31,16 +36,27 @@
   flex: 1 1 auto;
   flex-basis: 810px;
   overflow-x: visible;
-  overflow-y: auto;
+  /* overflow-y: auto; */
   width: 100%;
   max-width: 800px;
   margin: auto;
+  margin-top: 50px;
+  margin-bottom: 70px;
+}
+
+.form-container {
+  position: fixed;
+  width: 100vw;
+  bottom: 0px;
 }
 
 form {
   /* display:none; */
   background: #FFF;
-  padding: 5px;
+  /* padding: 5px 5px 15px 5px; */
+  padding: 10px;
+  margin: auto;
+  margin-bottom: 10px;
   font-size: 16px;
   display: flex;
   flex: 0 0 auto;
@@ -48,17 +64,16 @@ form {
   align-items: center;
   width: 100%;
   max-width: 790px;
-  margin: auto;
+  border: 1px solid #CCC;
+  border-radius: 2px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
 }
 
 input {
   padding: 10px;
   margin: 1px;
-  /* border-radius: 2px; */
-  /* border: 1px solid #CCC; */
-  border-width: 0 0 2px 0;
-  /* box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23); */
+  border-width: 0 0 1px 0;
+  border-color: #CCC;
 }
 
 input[type="text"] {
@@ -67,11 +82,19 @@ input[type="text"] {
 
 input[type="submit"] {
   background-color: #0a0;
-  border: none;
+  border-radius: 2px;
+  border: 1px solid green;
   color: white;
   cursor: pointer;
+  transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+  box-shadow: none;
+  margin-left: 10px;
 }
 input[type="submit"]:hover {
+  /* box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); */
+  /* box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); */
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  /* box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22); */
   background-color: rgb(79, 211, 79);
 }
 

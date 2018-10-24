@@ -25,6 +25,14 @@ class App extends Component {
 
   componentDidMount() {
     this.getHeadlines();
+    document.onscroll = () => {
+      const ah = document.getElementById('App-header');
+      if (window.scrollY > 1) {
+        ah.className = 'shadow';
+      } else {
+        ah.className = '';
+      }
+    }
   }
 
   getHeadlines() {
@@ -61,9 +69,11 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <div className="App-header">
-          <img src={logo} />
-          {/* <h1>Stale Mess Headline Voting System</h1> */}
+        <div id="App-header">
+          <div>
+            <img src={logo} />
+            {/* <h1>Stale Mess Headline Voting System</h1> */}
+          </div>
         </div>
         <div className="headline-area">
           <ul className='list-reset'>
@@ -72,11 +82,13 @@ class App extends Component {
             ))}
           </ul>
         </div>
-        <form onSubmit={this.submitHeadline}>
-          <input value={this.state.user} onChange={(e) => this.setState({ user: e.target.value })} type="email" name="headline" placeholder="your email"></input>
-          <input value={this.state.headlineInput} onChange={(e) => this.setState({ headlineInput: e.target.value })} type="text" name="headline" placeholder="suggest a headline"></input>
-          <input type="submit" value="submit" />
-        </form>
+        <div className="form-container">
+          <form onSubmit={this.submitHeadline}>
+            <input value={this.state.user} onChange={(e) => this.setState({ user: e.target.value })} type="email" name="headline" placeholder="your email"></input>
+            <input value={this.state.headlineInput} onChange={(e) => this.setState({ headlineInput: e.target.value })} type="text" name="headline" placeholder="suggest a headline"></input>
+            <input type="submit" value="submit" />
+          </form>
+        </div>
       </div>
     );
   }
