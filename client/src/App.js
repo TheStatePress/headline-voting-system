@@ -124,7 +124,7 @@ class App extends Component {
         </div>
         <div className="headline-area">
           <ul className='list-reset'>
-            <FlipMove >
+            <FlipMove enterAnimation="fade" leaveAnimation="fade">
               {(getSortedIds(headlineByIdMap)).map(id => (
                 <Headline
                   key={id}
