@@ -1,9 +1,13 @@
 import React, { Component } from 'react';
 import urljoin from 'url-join';
 import axios from 'axios';
-import './App.css';
 import { apiURL } from './config.js';
 import io from 'socket.io-client';
+import { sortBy, prop } from 'ramda';
+
+import logo from './logo.png';
+import Headline from './Headline';
+import './App.css';
 
 class App extends Component {
   constructor(props) {
@@ -11,7 +15,9 @@ class App extends Component {
     this.socket = io.connect(apiURL);
     this.state = {
       headlineInput: '',
-      headlines: {}
+      user: '',
+      headlines: {},
+      sortedHeadlines: []
     }
     this.getHeadlines = this.getHeadlines.bind(this);
     this.submitHeadline = this.submitHeadline.bind(this);
@@ -25,11 +31,14 @@ class App extends Component {
     console.log('here')
     axios.get(urljoin(apiURL, '/headlines'))
       .then(headlines => {
+        const sortedHeadlines = sortBy(prop('votes'), Object.values(headlines.data))
         this.setState({
-          headlines: headlines.data
+          headlines: headlines.data,
+          sortedHeadlines
         })
         console.log('asdf')
-        console.log(headlines);
+        console.log(sortedHeadlines);
+        console.log(headlines.data)
       })
   }
 
@@ -37,7 +46,7 @@ class App extends Component {
     e.preventDefault();
     axios.post(urljoin(apiURL, '/headlines'), {
       headline: this.state.headlineInput,
-      author: 'chuckdries'
+      user: this.state.user
     }).then(() => this.getHeadlines());
 
     this.setState({
@@ -45,21 +54,27 @@ class App extends Component {
     })
   }
 
+  receiveHeadlineUpdate() {
+
+  }
+
   render() {
     return (
       <div className="App">
-        <header className="App-header">
-          <h1>Stale Mess Headline Voting System</h1>
-        </header>
+        <div className="App-header">
+          <img src={logo} />
+          {/* <h1>Stale Mess Headline Voting System</h1> */}
+        </div>
         <div className="headline-area">
-          <ul>
-            {Object.keys(this.state.headlines).map(key => (
-              <li key={key}>{this.state.headlines[key].headline}</li>
+          <ul className='list-reset'>
+            {(this.state.sortedHeadlines).map(headline => (
+              <Headline key={headline.id} headline={headline} />
             ))}
           </ul>
         </div>
         <form onSubmit={this.submitHeadline}>
-          <input value={this.state.headlineInput} onChange={(e) => this.setState({ headlineInput: e.target.value })} type="text" name="headline"></input>
+          <input value={this.state.user} onChange={(e) => this.setState({ user: e.target.value })} type="email" name="headline" placeholder="your email"></input>
+          <input value={this.state.headlineInput} onChange={(e) => this.setState({ headlineInput: e.target.value })} type="text" name="headline" placeholder="suggest a headline"></input>
           <input type="submit" value="submit" />
         </form>
       </div>
