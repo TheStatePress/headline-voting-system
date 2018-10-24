@@ -29,7 +29,7 @@ const downvoteButton = (headline, downvoteFunc, unvoteFunc) => {
   }
 };
 
-class Headline extends React.Component {
+class Headline extends React.PureComponent {
   render() {
     const { headline, upvoteFunc, unvoteFunc, downvoteFunc } = this.props;
     return (

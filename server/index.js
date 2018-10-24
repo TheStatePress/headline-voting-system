@@ -43,7 +43,6 @@ const getVotes = async(id) => {
   const db = await dbPromise;
   const votes = await db.get('SELECT ( SELECT COALESCE( SUM(direction), 0) FROM votes WHERE votes.headlineid = ?) as votes', id);
   return votes.votes;
-  // return 0;
 };
 
 app.get('/headlines', async (req, res) => {
@@ -92,7 +91,6 @@ app.post('/headlines/:id/vote', async (req, res) => {
   await db.run('DELETE FROM votes WHERE userid=(SELECT id FROM users WHERE email=?) AND headlineid=?', email, id);
   await db.run('INSERT INTO votes (headlineid, userid, direction) VALUES (?, (SELECT id FROM users WHERE email=?), ?);', id, email, direction);
   const votes = await getVotes(id);
-  console.log(votes)
   io.emit('RECEIVE_HEADLINE_VOTE', { id, votes });
   res.send();
 });
@@ -103,7 +101,6 @@ app.post('/headlines/:id/unvote', async (req, res) => {
   const db = await dbPromise;
   await db.run('DELETE FROM votes WHERE userid=(SELECT id FROM users WHERE email=?) AND headlineid=?', email, id);
   const votes = await getVotes(id);
-  console.log(votes)
   io.emit('RECEIVE_HEADLINE_VOTE', { id, votes });
   res.send();
 })
