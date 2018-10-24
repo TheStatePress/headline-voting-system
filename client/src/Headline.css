@@ -1,6 +1,7 @@
 li {
   display: flex;
-  background: #eee;
+  /* background: #eee; */
+  background: #FFF;
   padding: 15px;
   line-height: 1.6;
   align-items: center;
