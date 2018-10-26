@@ -43,11 +43,12 @@ class App extends Component {
                 <ol style={{ display: 'block', }}>
                   <li>Log In</li>
                   <li>Submit up to 2 Headlines</li>
-                  <li>Vote on up to 3 headlines</li>
+                  {/* <li>Vote on up to 3 headlines</li> */}
+                  <li>Vote on as many as you'd like</li>
                 </ol>
               </div>
               <div>
-                <input className="auto" value={tempUser} onChange={(e) => { this.setState({ tempUser: e.target.value, }); }} type="email" placeholder="enter the email your editor knows about" />
+                <input className="auto" value={tempUser} onChange={(e) => { this.setState({ tempUser: e.target.value, }); }} type="email" autoFocus={true} placeholder="enter the email your editor knows about" />
                 <button type="submit"><FontAwesomeIcon icon={faEnvelope} size="2x" /></button>
               </div>
             </form>

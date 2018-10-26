@@ -16,6 +16,13 @@ const getSortedIds = (headlineByIdMap) => {
   );
 };
 
+const getCountOfSubmittedHeadlines = (headlineByIdMap, currentUserId) => {
+  const num = R.reduce((acc, headline) => R.add(headline.author === currentUserId, acc), 0, Object.values(headlineByIdMap));
+  debugger;
+  console.log(num);
+  return num;
+};
+
 export default class HeadlineContainer extends Component {
   constructor(props) {
     super(props);
@@ -65,6 +72,7 @@ export default class HeadlineContainer extends Component {
     this.setState({
       headlineInput: '',
     });
+    return false;
   }
 
   getSpecificHeadline(id) {
@@ -135,7 +143,7 @@ export default class HeadlineContainer extends Component {
       headlineByIdMap,
       headlineInput,
     } = this.state;
-
+    console.log('render');
     return (
       <div>
         <div className="headline-area">
@@ -157,12 +165,12 @@ export default class HeadlineContainer extends Component {
           </ul>
         </div>
         <div className="form-container">
-          <form onSubmit={this.submitHeadline}>
+          {getCountOfSubmittedHeadlines(headlineByIdMap, currentUserId) < 2 && <form onSubmit={this.submitHeadline}>
             <div>
               <input className="auto" value={headlineInput} onChange={(e) => this.setState({ headlineInput: e.target.value, })} type="text" name="headline" placeholder="suggest a headline"></input>
               <button type="submit"><FontAwesomeIcon icon={faPaperPlane} size="2x" /></button>
             </div>
-          </form>
+          </form>}
         </div>
       </div>
     );

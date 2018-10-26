@@ -75,7 +75,6 @@ app.get('/headlines', async (req, res) => {
 });
 
 app.post('/headlines', async (req, res) => {
-  debugger;
   const { headline, user: email } = req.body;
   const db = await dbPromise;
   let user = await db.get('SELECT id FROM users WHERE email=?', trim(email));
@@ -83,6 +82,11 @@ app.post('/headlines', async (req, res) => {
     await db.run('INSERT INTO users (email) VALUES (?)', trim(email));
     user = await db.get('SELECT id FROM users WHERE email=?', trim(email));
   };
+  const count = await db.get('SELECT ( SELECT COUNT(*) FROM headlines WHERE userid=? ) as count', user.id);
+  if (count.count >= 2) {
+    res.status(400).send('you can only submit 2 headlines');
+    return;
+  }
   await db.run('INSERT INTO headlines ( headline, userid ) VALUES (?, ?);', headline, user.id);
   const newHeadline = await db.get(
     `SELECT
@@ -139,10 +143,10 @@ app.post('/headlines/:id/delete', async (req, res) => {
   }
 });
 
-app.use(express.static('../client/build/'));
+app.use(express.static('./client/'));
 
 app.use((req, res) => {
-  res.sendFile('../client/build/index.html');
+  res.sendFile('./client/index.html');
 })
 
 server.listen(8080, function () {
