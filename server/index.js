@@ -43,17 +43,20 @@ io.on('connection', (socket) => {
   })
 });
 
-const getVotes = async(id) => {
+const getVotes = async (id) => {
   const db = await dbPromise;
   const votes = await db.get('SELECT ( SELECT COALESCE( SUM(direction), 0) FROM votes WHERE votes.headlineid = ?) as votes', id);
   return votes.votes;
 };
+app.get('/authorize', async (req, res) => {
+  const { email } = req.query;
 
+});
 app.get('/headlines', async (req, res) => {
   const { email } = req.query;
   const db = await dbPromise;
   let user = await db.get('SELECT id FROM users WHERE email=?', email);
-  if(!user) {
+  if (!user) {
     await db.run('INSERT INTO users (email) VALUES (?)', trim(email));
     user = await db.get('SELECT id FROM users WHERE email=?', trim(email));
   };
@@ -65,7 +68,10 @@ app.get('/headlines', async (req, res) => {
       ( SELECT COALESCE(SUM(votes.direction), 0) FROM votes WHERE votes.headlineid = headlines.id) as votes,
       ( SELECT COALESCE(SUM(votes.direction), 0) FROM votes WHERE votes.headlineid = headlines.id AND votes.userid = ?) as selfVotes
      FROM headlines LEFT JOIN users ON headlines.userid = users.id`, user.id);
-  res.json(indexBy(prop('id'), headlines));
+  res.json({
+    headlines: indexBy(prop('id'), headlines),
+    yourUserId: user.id
+  });
 });
 
 app.post('/headlines', async (req, res) => {
@@ -73,11 +79,20 @@ app.post('/headlines', async (req, res) => {
   const { headline, user: email } = req.body;
   const db = await dbPromise;
   let user = await db.get('SELECT id FROM users WHERE email=?', trim(email));
-  if(!user) {
+  if (!user) {
     await db.run('INSERT INTO users (email) VALUES (?)', trim(email));
     user = await db.get('SELECT id FROM users WHERE email=?', trim(email));
   };
   await db.run('INSERT INTO headlines ( headline, userid ) VALUES (?, ?);', headline, user.id);
+  const newHeadline = await db.get(
+    `SELECT
+    headlines.headline,
+    headlines.id,
+    users.id as author,
+    ( SELECT COALESCE(SUM(votes.direction), 0) FROM votes WHERE votes.headlineid = headlines.id) as votes,
+    ( SELECT COALESCE(SUM(votes.direction), 0) FROM votes WHERE votes.headlineid = headlines.id AND votes.userid = ?) as selfVotes
+    FROM headlines LEFT JOIN users ON headlines.userid = users.id WHERE headlines.id=last_insert_rowid() `, user.id);
+  io.emit('HEADLINE_CREATED', newHeadline);
   res.status(200).send();
 });
 
@@ -106,7 +121,23 @@ app.post('/headlines/:id/unvote', async (req, res) => {
   const votes = await getVotes(id);
   io.emit('RECEIVE_HEADLINE_VOTE', { id, votes });
   res.send();
-})
+});
+
+app.post('/headlines/:id/delete', async (req, res) => {
+  const { id } = req.params;
+  const { email } = req.body;
+  const db = await dbPromise;
+  const headline = await db.get('SELECT * FROM headlines WHERE id=?', id);
+  const user = await db.get('SELECT * FROM users WHERE email=?', email);
+  if (headline.userid === user.id) {
+    await db.run('DELETE FROM headlines WHERE id=?', headline.id);
+    await db.run('DELETE FROM votes WHERE headlineid=?', headline.id);
+    io.emit('HEADLINE_DELETED', { id: headline.id });
+    res.status(200).send();
+  } else {
+    res.status(400).send('you can only delete headlines you created');
+  }
+});
 
 app.use(express.static('../client/build/'));
 

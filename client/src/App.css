@@ -59,6 +59,7 @@ form {
   margin: auto;
   font-size: 16px;
   display: flex;
+  flex-direction: column;
   flex: 0 0 auto;
   justify-content: center;
   align-items: center;
@@ -68,7 +69,11 @@ form {
   border-radius: 3px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
 }
-
+form div {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
 .centering {
   flex: 1 1 auto;
   display: flex;
@@ -88,7 +93,7 @@ input.auto {
 }
 
 button[type="submit"] {
-  background-color: rgb(0, 146, 0);
+  background-color: rgb(72, 180, 72);
   /* border-radius: 2px; */
   border-radius: 50%;
   color: white;
@@ -110,7 +115,7 @@ button[type="submit"]:hover {
   /* box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); */
   /* box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23); */
   box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
-  background-color: #0a0;
+  background-color: rgb(0, 214, 0);
 }
 
 ul.list-reset {
@@ -119,4 +124,12 @@ ul.list-reset {
 
 .list-reset li {
   list-style: none;
+}
+
+ol {
+  margin: 0;
+  line-height: 1.6;
+}
+form h4 {
+  margin: .5em 0;
 }

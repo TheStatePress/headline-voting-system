@@ -1,4 +1,4 @@
-li {
+ul li {
   display: flex;
   /* background: #eee; */
   background: #FFF;
@@ -12,8 +12,9 @@ li {
 }
 
 h3 {
-  font-weight: normal;
+  /* font-weight: normal; */
   font-family: 'Playfair Display', serif;
+  font-size: 1.5em;
   margin: 0;
 }
 .voteContainer {
@@ -42,4 +43,12 @@ h3 {
   /* display: hidden !important; */
   /* opacity: 0; */
   /* cursor: unset; */
+}
+
+.delete-button {
+  color: #666;
+  cursor: pointer;
+}
+.delete-button:hover {
+  color: #000;
 }
