@@ -48,10 +48,7 @@ const getVotes = async (id) => {
   const votes = await db.get('SELECT ( SELECT COALESCE( SUM(direction), 0) FROM votes WHERE votes.headlineid = ?) as votes', id);
   return votes.votes;
 };
-app.get('/authorize', async (req, res) => {
-  const { email } = req.query;
 
-});
 app.get('/headlines', async (req, res) => {
   const { email } = req.query;
   const db = await dbPromise;
@@ -149,7 +146,7 @@ app.use((req, res) => {
   res.sendFile('./client/index.html');
 })
 
-server.listen(8080, function () {
+server.listen(443, function () {
   setupDb();
   console.log('http://localhost:8080')
 });
