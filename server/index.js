@@ -146,7 +146,7 @@ app.use((req, res) => {
   res.sendFile('./client/index.html');
 })
 
-server.listen(443, function () {
+server.listen(8080, function () {
   setupDb();
   console.log('http://localhost:8080')
 });

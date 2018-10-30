@@ -18,8 +18,6 @@ const getSortedIds = (headlineByIdMap) => {
 
 const getCountOfSubmittedHeadlines = (headlineByIdMap, currentUserId) => {
   const num = R.reduce((acc, headline) => R.add(headline.author === currentUserId, acc), 0, Object.values(headlineByIdMap));
-  debugger;
-  console.log(num);
   return num;
 };
 
@@ -85,7 +83,6 @@ export default class HeadlineContainer extends Component {
   }
 
   receiveHeadlineVotes({ id, votes, }) {
-    console.log(votes);
     const { headlineByIdMap, } = this.state;
     this.setState({
       headlineByIdMap: R.assocPath([id, 'votes',], votes, headlineByIdMap),
@@ -143,7 +140,6 @@ export default class HeadlineContainer extends Component {
       headlineByIdMap,
       headlineInput,
     } = this.state;
-    console.log('render');
     return (
       <div>
         <div className="headline-area">
