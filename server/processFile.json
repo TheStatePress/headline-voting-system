@@ -1,0 +1,7 @@
+{
+    "apps": [{
+        "name": "headline-server",
+        "script": "./src/index.js",
+        "node_args": "-r esm"
+    }]
+}
